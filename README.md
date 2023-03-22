@@ -2,7 +2,7 @@
 Compile and Run C\C++ Programs with One Command! <br>
 
 # Example Usage
-## Single source file
+## Single Source File
 ```
 c_cl test.c 
 ```
@@ -11,7 +11,7 @@ c_cl test.c
 
 
 
-## Multiple source files
+## Multiple Source Files
 ```
 c_cl source1.cpp source2.cpp source2.cpp 
 ```

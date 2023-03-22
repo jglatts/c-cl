@@ -75,7 +75,7 @@ bool CL::run() {
 void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     ZeroMemory(si, sizeof(*si));
     si->cb = sizeof(si);
-    ZeroMemory(&pi, sizeof(*pi));    
+    ZeroMemory(pi, sizeof(*pi));    
 }
 
 /**
