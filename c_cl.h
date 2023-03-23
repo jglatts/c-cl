@@ -20,6 +20,17 @@
  * @brief Library definitons
  */
 #define MAX_ARGS 10
+#define PROCESS_FN_PARAMS(mod_name, mod_args, flags, si_ptr, pi_ptr)  \
+        mod_name,      \
+        mod_args,      \
+        NULL,          \
+        NULL,          \
+        FALSE,         \
+        flags,         \
+        NULL,          \
+        NULL,          \
+        si_ptr,        \
+        pi_ptr         
 
 /**
  * @brief CL structure to perfom the compile\run operatios

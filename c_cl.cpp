@@ -79,7 +79,7 @@ void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
 }
 
 /**
- * @brief 
+ * @brief Start a new process to compile the user code
  * 
  * @param si pointer to STARTUPINFO object 
  * @param pi pointer to PROCESS_INFORMATION object 
@@ -100,18 +100,7 @@ bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     }
     all_paths[i] = '\0';
 
-    return CreateProcess(
-            cl_path,        // Module name
-            all_paths,      // Module arguments
-            NULL,           // Process handle not inheritable
-            NULL,           // Thread handle not inheritable
-            FALSE,          // Set handle inheritance to FALSE
-            0,              // No creation flags
-            NULL,           // Use parent's environment block
-            NULL,           // Use parent's starting directory 
-            si,             // Pointer to STARTUPINFO structure
-            pi              // Pointer to PROCESS_INFORMATOIN structure 
-    );
+    return CreateProcess(PROCESS_FN_PARAMS(cl_path, all_paths, 0, si, pi));
 }   
 
 /**
@@ -141,18 +130,7 @@ bool CL::create_process_run(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
         path[i] = '\0';   
     }
 
-    return CreateProcess(
-            NULL,           // Module name
-            path,           // Module arguments
-            NULL,           // Process handle not inheritable
-            NULL,           // Thread handle not inheritable
-            FALSE,          // Set handle inheritance to FALSE
-            0,              // No creation flags
-            NULL,           // Use parent's environment block
-            NULL,           // Use parent's starting directory 
-            si,             // Pointer to STARTUPINFO structure
-            pi              // Pointer to PROCESS_INFORMATOIN structure 
-    );
+    return CreateProcess(PROCESS_FN_PARAMS(NULL, path, 0, si, pi));
 }
 
 /**
