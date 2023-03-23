@@ -123,16 +123,23 @@ bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
  * @return false if process creation is not sucessfull 
  */
 bool CL::create_process_run(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
-    char path[1024];
-    int i;
+    char* path = argv[1];
+    char* back_slash;
+    char* dot_check;
+    int   dot_idx;
 
-    // remove the . extensions
-    // could be prolly use a strstr to find first occurence
-    // then write '\0' there to eet rid of it 
-    for (i = 0; i < strlen(argv[1]) && argv[1][i] != '.'; i++) {
-        path[i] = argv[1][i];
+    // remove the . extension
+    if ((dot_check = strstr(argv[1], ".")) == NULL) return false;
+    dot_idx = dot_check - argv[1];
+    argv[1][dot_idx] = '\0';
+
+    // check for the backslash
+    if ((back_slash = strstr(path, "\\")) != NULL) {
+        int i;
+        back_slash++;
+        for (i = 0; i < strlen(back_slash); i++) path[i] = back_slash[i];
+        path[i] = '\0';   
     }
-    path[i] = '\0';
 
     return CreateProcess(
             NULL,           // Module name
