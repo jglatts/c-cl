@@ -10,11 +10,14 @@
  */
 #include "c_cl.h"
 #include <cstdlib>
-#include <windows.h>
 #include <cassert>
+#include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include <tchar.h>
+#include <iostream>
+#include <string>
+
 
 /**
  * @brief Construct a new CL::CL object
@@ -38,7 +41,7 @@ CL::CL(int count, char* vec[]):
  * @return true if process creation is sucessfull 
  * @return false if process creation is not sucessfull 
  */
-bool CL::run() {
+bool CL::run(void) {
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
 
@@ -79,6 +82,26 @@ void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
 }
 
 /**
+ * @brief Get the MSCV compiler version
+ */
+void CL::get_msvc_path(void) {
+    WIN32_FIND_DATA FindFileData;
+    HANDLE hFind;
+    char* cl_path = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC";
+    hFind = FindFirstFile(cl_path, &FindFileData);
+    // need to investigate
+    if (hFind) {
+        do {
+            if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                printf("%s <DIR>\n", FindFileData.cFileName);
+            else
+                printf("%s\n", FindFileData.cFileName);
+        } while (FindNextFile(hFind, &FindFileData) != 0);
+      FindClose(hFind);
+    }
+}
+
+/**
  * @brief Start a new process to compile the user code
  * 
  * @param si pointer to STARTUPINFO object 
@@ -89,6 +112,9 @@ void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
 bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     char* cl_path = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx86\\x86\\cl.exe";
     
+    // Needs some work 
+    get_msvc_path();
+   
     // convert array of strings to single string
     char all_paths[1024];
     int i = 0;

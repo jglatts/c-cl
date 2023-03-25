@@ -4,7 +4,8 @@ Compile and Run C\C++ Programs with One Command! <br>
 # Example Usage
 
 ## Run The Demo
-Make sure you have the MSVC compiler installed
+Make sure you have the MSVC compiler installed. <br>
+Run the following commands in your terminal: 
 ```
 git clone https://github.com/jglatts/c-cl
 cd c-cl
@@ -17,7 +18,7 @@ c_cl demo-code\test.c demo-code\source.c
 
 
 
-## Single Source File
+## Compile\Run Single Source File
 ```
 c_cl test.c 
 ```
@@ -26,7 +27,7 @@ c_cl test.c
 
 
 
-## Multiple Source Files
+## Compile\Run Multiple Source Files
 ```
 c_cl source1.cpp source2.cpp source2.cpp 
 ```
