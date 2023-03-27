@@ -42,7 +42,7 @@ public:
 private:
     int argc;
     char* argv[MAX_ARGS];
-    void get_msvc_path(void);
+    char* get_msvc_path(void);
     void init_process_info(STARTUPINFO*, PROCESS_INFORMATION*);
     bool create_process_cl(STARTUPINFO*, PROCESS_INFORMATION*);
     bool create_process_run(STARTUPINFO*, PROCESS_INFORMATION*);

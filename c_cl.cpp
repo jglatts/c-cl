@@ -9,15 +9,14 @@
  * @copyright Copyright (c) 2023
  */
 #include "c_cl.h"
-#include <cstdlib>
-#include <cassert>
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include <tchar.h>
+#include <cstdlib>
+#include <cassert>
 #include <iostream>
 #include <string>
-
 
 /**
  * @brief Construct a new CL::CL object
@@ -84,21 +83,27 @@ void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
 /**
  * @brief Get the MSCV compiler version
  */
-void CL::get_msvc_path(void) {
+char* CL::get_msvc_path(void) {
     WIN32_FIND_DATA FindFileData;
     HANDLE hFind;
-    char* cl_path = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC";
-    hFind = FindFirstFile(cl_path, &FindFileData);
-    // need to investigate
+    // the wildcard, \*, must be added to the search string!!
+    char* s = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\*";
+    hFind = FindFirstFileA(s, &FindFileData);   
     if (hFind) {
         do {
-            if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+            if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                // found the CL version
+                // need to convert wchar_t to char* and then return 
+                // see https://www.thinkage.ca/gcos/expl/c/lib/wcstom.html
                 printf("%s <DIR>\n", FindFileData.cFileName);
-            else
+            }
+            else {
                 printf("%s\n", FindFileData.cFileName);
+            }
         } while (FindNextFile(hFind, &FindFileData) != 0);
-      FindClose(hFind);
+        FindClose(hFind);
     }
+    return NULL;
 }
 
 /**
@@ -111,8 +116,8 @@ void CL::get_msvc_path(void) {
  */
 bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     char* cl_path = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx86\\x86\\cl.exe";
-    
-    // Needs some work 
+
+    // need to do the strcat()'ing
     get_msvc_path();
    
     // convert array of strings to single string
@@ -125,8 +130,7 @@ bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
         }
     }
     all_paths[i] = '\0';
-
-    return CreateProcess(PROCESS_FN_PARAMS(cl_path, all_paths, 0, si, pi));
+    return CreateProcess(PROCESS_FN_PARAMS(cl_path, all_paths, 0, si, pi)); 
 }   
 
 /**
