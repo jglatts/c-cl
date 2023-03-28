@@ -1,6 +1,6 @@
 # c-cl
 Compile and Run C\C++ Programs with One Command! <br>
-Written in Pure C++, No Batch Scripting :slightly_smiling_face: <br>
+Written in Pure C++, No Batch Scripting :wink: <br>
 
 # Example Usage
 
