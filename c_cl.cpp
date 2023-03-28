@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <tchar.h>
 #include <cstdlib>
 #include <cassert>
@@ -81,24 +82,26 @@ void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
 }
 
 /**
- * @brief Get the MSCV compiler version
+ * @brief Get the msvc compiler version number
+ * 
+ * @return char*, string containing compiler version
  */
 char* CL::get_msvc_path(void) {
     WIN32_FIND_DATA FindFileData;
     HANDLE hFind;
+
     // the wildcard, \*, must be added to the search string!!
     char* s = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\*";
-    hFind = FindFirstFileA(s, &FindFileData);   
-    if (hFind) {
+    if ((hFind = FindFirstFileA(s, &FindFileData)) != NULL) {
         do {
-            if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            if (FindFileData.cFileName[0] != '.' && FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 // found the CL version
-                // need to convert wchar_t to char* and then return 
-                // see https://www.thinkage.ca/gcos/expl/c/lib/wcstom.html
-                printf("%s <DIR>\n", FindFileData.cFileName);
-            }
-            else {
-                printf("%s\n", FindFileData.cFileName);
+                char* ret = (char*)malloc(sizeof(char) * strlen(FindFileData.cFileName));
+                int i;
+                for (i = 0; FindFileData.cFileName[i] != '\0'; i++) 
+                    ret[i] = FindFileData.cFileName[i];
+                ret[i] = '\0';
+                return ret;
             }
         } while (FindNextFile(hFind, &FindFileData) != 0);
         FindClose(hFind);
@@ -115,10 +118,13 @@ char* CL::get_msvc_path(void) {
  * @return false if process creation is not sucessfull 
  */
 bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
-    char* cl_path = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx86\\x86\\cl.exe";
-
-    // need to do the strcat()'ing
-    get_msvc_path();
+    // get the compiler path
+    char cl_path[1024] = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\";
+    char* bin_path = "\\bin\\Hostx86\\x86\\cl.exe";
+    char* s = get_msvc_path();
+    strcat(cl_path, s);
+    strcat(cl_path, bin_path);
+    free(s);
    
     // convert array of strings to single string
     char all_paths[1024];
@@ -130,6 +136,7 @@ bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
         }
     }
     all_paths[i] = '\0';
+    
     return CreateProcess(PROCESS_FN_PARAMS(cl_path, all_paths, 0, si, pi)); 
 }   
 
