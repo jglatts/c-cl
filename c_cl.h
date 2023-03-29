@@ -20,6 +20,7 @@
  * @brief Library definitons
  */
 #define MAX_ARGS 10
+#define MSCV_PATH_STR "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\%s\\bin\\Hostx86\\x86\\cl.exe"
 #define PROCESS_FN_PARAMS(mod_name, mod_args, flags, si_ptr, pi_ptr)  \
         mod_name,      \
         mod_args,      \

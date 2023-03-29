@@ -114,16 +114,14 @@ char* CL::get_msvc_path(void) {
  * 
  * @param si pointer to STARTUPINFO object 
  * @param pi pointer to PROCESS_INFORMATION object 
- * @return true if process creation is sucessfull 
- * @return false if process creation is not sucessfull 
+ * @return true if process creation is sucessfull .,
+ * @return false if process creation is not sucessfull  
  */
 bool CL::create_process_cl(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     // get the compiler path
-    char cl_path[1024] = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\";
-    char* bin_path = "\\bin\\Hostx86\\x86\\cl.exe";
+    char cl_path[1024];
     char* s = get_msvc_path();
-    strcat(cl_path, s);
-    strcat(cl_path, bin_path);
+    snprintf(cl_path, 1024, MSCV_PATH_STR, s);
     free(s);
    
     // convert array of strings to single string
