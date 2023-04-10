@@ -55,7 +55,7 @@ bool CL::run(void) {
     WaitForSingleObject(pi.hProcess, INFINITE);
     
     // Run the compiled code from above 
-    printf("\n\nRunning %s\n\n", argv[1]);
+    printf("\n\nRunning Source Files...\n\n");
     init_process_info(&si, &pi);
     if(!create_process_run(&si, &pi)) {
         printf("CreateProcess failed (%d)\n", GetLastError());
@@ -96,6 +96,7 @@ char* CL::get_msvc_path(void) {
         do {
             if (FindFileData.cFileName[0] != '.' && FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 // found the CL version
+                // build the string the return it
                 char* ret = (char*)malloc(sizeof(char) * strlen(FindFileData.cFileName));
                 int i;
                 for (i = 0; FindFileData.cFileName[i] != '\0'; i++) 
@@ -151,11 +152,20 @@ bool CL::create_process_run(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     char* back_slash;
     char* dot_check;
     int   dot_idx;
+    int   index = 1;
+
+    // check for any compiler extensions
+    while (1) {
+        if (strstr(path, "/") != NULL) {
+            path = argv[index++];
+        }
+        else break;
+    }
 
     // remove the . extension
-    if ((dot_check = strstr(argv[1], ".")) == NULL) return false;
-    dot_idx = dot_check - argv[1];
-    argv[1][dot_idx] = '\0';
+    if ((dot_check = strstr(path, ".")) == NULL) return false;
+    dot_idx = dot_check - path;
+    path[dot_idx] = '\0';
 
     // check for the backslash
     if ((back_slash = strstr(path, "\\")) != NULL) {
