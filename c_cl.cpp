@@ -155,11 +155,9 @@ bool CL::create_process_run(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     int   index = 1;
 
     // check for any compiler extensions
-    while (1) {
-        if (strstr(path, "/") != NULL) {
-            path = argv[index++];
-        }
-        else break;
+    // make while(strstr() != NULL)
+    while (strstr(path, "/") != NULL) {
+        path = argv[index++];
     }
 
     // remove the . extension

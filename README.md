@@ -32,3 +32,9 @@ c_cl test.c
 ```
 c_cl source1.cpp source2.cpp source2.cpp 
 ```
+
+<br>
+## Works with compiler flagas too
+```
+c_cl /w /O2 tt.c
+```
