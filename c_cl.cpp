@@ -25,12 +25,24 @@
  * @param count 
  * @param vec 
  */
-CL::CL(int count, char* vec[]):
+CL::CL(int count, char* vec[]): 
     argc{count} {
+    set_stdout_redir();
     assert(count <= MAX_ARGS);
     for (int i = 0; i < count; i++) {
         argv[i] = vec[i];
     }
+}
+
+/**
+ * @brief Set the output file for stdout redirection
+ */
+void CL::set_stdout_redir() {
+    SECURITY_ATTRIBUTES sa;
+    sa.nLength = sizeof(sa);
+    sa.lpSecurityDescriptor = NULL;
+    sa.bInheritHandle = TRUE;    
+    stdout_redir = CreateFile(HANDLE_FN_PARMS("stdout_log.txt"));
 }
 
 /**
@@ -46,7 +58,7 @@ bool CL::run(void) {
     PROCESS_INFORMATION pi;
 
     // Compile the source files in argv
-    init_process_info(&si, &pi);
+    init_process_info(&si, &pi, REDIR_STDOUT);
     printf("\n\nCompiling Source Files...\n\n");
     if(!create_process_cl(&si, &pi)) {
         printf("CreateProcess failed (%d)\n", GetLastError());
@@ -56,7 +68,7 @@ bool CL::run(void) {
     
     // Run the compiled code from above 
     printf("\n\nRunning Source Files...\n\n");
-    init_process_info(&si, &pi);
+    init_process_info(&si, &pi, USE_STDOUT);
     if(!create_process_run(&si, &pi)) {
         printf("CreateProcess failed (%d)\n", GetLastError());
         return false;
@@ -75,10 +87,16 @@ bool CL::run(void) {
  * @param si pointer to STARTUPINFO object 
  * @param pi pointer to PROCESS_INFORMATION object 
  */
-void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
+void CL::init_process_info(STARTUPINFO* si, PROCESS_INFORMATION* pi, bool output_redir) {
     ZeroMemory(si, sizeof(*si));
-    si->cb = sizeof(si);
     ZeroMemory(pi, sizeof(*pi));    
+    si->cb = sizeof(si);
+    if (output_redir) {
+        si->dwFlags |= STARTF_USESTDHANDLES;
+        si->hStdInput = NULL;
+        si->hStdError = stdout_redir;
+        si->hStdOutput = stdout_redir;
+    }
 }
 
 /**
@@ -111,7 +129,7 @@ char* CL::get_msvc_path(void) {
 }
 
 /**
- * @brief Start a new process to compile the user code
+ * @brief Start a new process and compile the user code
  * 
  * @param si pointer to STARTUPINFO object 
  * @param pi pointer to PROCESS_INFORMATION object 
@@ -155,9 +173,8 @@ bool CL::create_process_run(STARTUPINFO* si, PROCESS_INFORMATION* pi) {
     int   index = 1;
 
     // check for any compiler extensions
-    // make while(strstr() != NULL)
     while (strstr(path, "/") != NULL) {
-        path = argv[index++];
+        path = argv[++index];
     }
 
     // remove the . extension
