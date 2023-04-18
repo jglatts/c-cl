@@ -25,10 +25,10 @@
  * @param count 
  * @param vec 
  */
-CL::CL(int count, char* vec[]): 
-    argc{count} {
-    set_stdout_redir();
+CL::CL(int count, char* vec[]) {
     assert(count <= MAX_ARGS);
+    set_stdout_redir();
+    argc = count;
     for (int i = 0; i < count; i++) {
         argv[i] = vec[i];
     }
